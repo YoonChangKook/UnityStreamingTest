@@ -4,9 +4,9 @@ using FFmpeg.AutoGen;
 /// <summary>
 /// FFmpeg 라이브러리를 이용한 RTP Video Streamer
 /// 
-/// MPEG4 코덱을 기본으로 사용한다.
+/// MPEG2 코덱을 기본으로 사용한다.
 /// </summary>
-public unsafe class RTPVideoStreamer : IDisposable
+public unsafe class RtpVideoStreamer : IDisposable
 {
     private static readonly AVCodecID DEFAULT_VIDEO_CODEC = AVCodecID.AV_CODEC_ID_MPEG1VIDEO;
     private static readonly AVPixelFormat DEFAULT_SRC_PIXEL_FORMAT = AVPixelFormat.AV_PIX_FMT_YUV420P;
@@ -16,15 +16,15 @@ public unsafe class RTPVideoStreamer : IDisposable
     private static readonly long DEFAULT_BIT_RATE = 1600000L;
     public static readonly int VIDEO_FPS = 30;
 
-    private AVFormatContext* _formatContext;
-    private AVCodecContext* _codecContext;
-    private AVStream* _avStream;
-    private AVFrame* _frame;
-    private AVPacket* _packet;
-    private SwsContext* _convertContext;
+    private readonly AVFormatContext* _formatContext;
+    private readonly AVCodecContext* _codecContext;
+    private readonly AVStream* _avStream;
+    private readonly AVFrame* _frame;
+    private readonly AVPacket* _packet;
+    private readonly SwsContext* _convertContext;
     private long _frameIndex;
 
-    public RTPVideoStreamer(string rtpUrl)
+    public RtpVideoStreamer(string rtpUrl)
     {
         ffmpeg.avformat_network_init();
 
@@ -124,15 +124,13 @@ public unsafe class RTPVideoStreamer : IDisposable
         return frame;
     }
 
-    public void writeFrame(AVFrame* srcFrame)
+    public void WriteFrame(AVFrame* srcFrame)
     {
-        int ret;
-
         // 프레임을 쓰기 가능으로 만들기
         ffmpeg.av_frame_make_writable(this._frame);
 
         // 픽셀 포멧 변환
-        ret = ffmpeg.sws_scale(this._convertContext,
+        ffmpeg.sws_scale(this._convertContext,
             srcFrame->data, srcFrame->linesize, 0, VIDEO_HEIGHT,
             this._frame->data, this._frame->linesize);
 
@@ -140,13 +138,13 @@ public unsafe class RTPVideoStreamer : IDisposable
         this._frame->pts = this._frameIndex++;
 
         // 인코딩
-        ret = ffmpeg.avcodec_send_frame(this._codecContext, this._frame);
-        ret = ffmpeg.avcodec_receive_packet(this._codecContext, this._packet);
+        ffmpeg.avcodec_send_frame(this._codecContext, this._frame);
+        ffmpeg.avcodec_receive_packet(this._codecContext, this._packet);
 
         // 스트림으로 전송
         ffmpeg.av_packet_rescale_ts(this._packet, this._codecContext->time_base, this._avStream->time_base);
         this._packet->stream_index = this._avStream->index;
-        ret = ffmpeg.av_write_frame(this._formatContext, this._packet);
+        ffmpeg.av_write_frame(this._formatContext, this._packet);
 
         ffmpeg.av_packet_unref(this._packet);
     }

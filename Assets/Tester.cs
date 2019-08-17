@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Collections;
 using System.Runtime.InteropServices;
 using System.Threading;
 using UnityEngine;
@@ -8,7 +7,7 @@ using FFmpeg.AutoGen;
 
 public unsafe class Tester : MonoBehaviour
 {
-    private RTPVideoStreamer streamer;
+    private RtpVideoStreamer streamer;
     private AVFrame* srcFrame;
     private int circularColor;
 
@@ -19,7 +18,7 @@ public unsafe class Tester : MonoBehaviour
         Debug.Log("platform: " + (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) == true ? "Windows" : "Other"));
         RegisterFFmpegBinaries();
         Debug.Log(ffmpeg.av_version_info());
-        this.streamer = new RTPVideoStreamer("rtp://127.0.0.1:9000/test/");
+        this.streamer = new RtpVideoStreamer("rtp://127.0.0.1:9000/test/");
         this.circularColor = 0;
         this.srcFrame = ffmpeg.av_frame_alloc();
     }
@@ -33,7 +32,6 @@ public unsafe class Tester : MonoBehaviour
 
         ffmpeg.av_frame_get_buffer(srcFrame, 32);
 
-        
         // 더미 이미지 만들기
         /* Y */
         for (int y = 0; y < 1080; y++)
@@ -55,12 +53,15 @@ public unsafe class Tester : MonoBehaviour
         }
 
         // 더미 이미지 송신
-        streamer.writeFrame(srcFrame);
+        streamer.WriteFrame(srcFrame);
 
-        circularColor = (byte)((circularColor + 1) % 60);
-        Thread.Sleep(1000 / RTPVideoStreamer.VIDEO_FPS);
+        circularColor = (byte)(circularColor + 1);
+        Thread.Sleep(1000 / RtpVideoStreamer.VIDEO_FPS);
     }
 
+    /// <summary>
+    /// FFmpeg 바이너리를 사용할 수 있도록 Root Path를 등록해주는 메서드
+    /// </summary>
     private void RegisterFFmpegBinaries()
     {
         var current = Environment.CurrentDirectory;
