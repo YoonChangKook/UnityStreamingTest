@@ -10,8 +10,6 @@ using System.Runtime.InteropServices;
 public unsafe class RtpVideoReceiver : IDisposable
 {
     private static readonly AVPixelFormat DEFAULT_DST_PIXEL_FORMAT = AVPixelFormat.AV_PIX_FMT_RGB24;
-    private static readonly int VIDEO_WIDTH = 1920;
-    private static readonly int VIDEO_HEIGHT = 1080;
 
     private readonly AVCodecContext* _codecContext;
     private readonly AVFormatContext* _formatContext;
@@ -68,13 +66,13 @@ public unsafe class RtpVideoReceiver : IDisposable
         if (this._convertContext == null) throw new ApplicationException("Could not initialize the conversion context.");
 
         // 픽셀 포멧 변환용 임시 저장소 할당
-        var convertedFrameBufferSize = ffmpeg.av_image_get_buffer_size(DEFAULT_DST_PIXEL_FORMAT, (int)VIDEO_WIDTH, (int)VIDEO_HEIGHT, 1);
+        var convertedFrameBufferSize = ffmpeg.av_image_get_buffer_size(DEFAULT_DST_PIXEL_FORMAT, (int)this._codecContext->width, (int)this._codecContext->height, 1);
         this._convertedFrameBufferPtr = Marshal.AllocHGlobal(convertedFrameBufferSize);
         this._convertDstData = new byte_ptrArray4();
         this._convertDstLinesize = new int_array4();
 
         ffmpeg.av_image_fill_arrays(ref this._convertDstData, ref this._convertDstLinesize,
-            (byte*)this._convertedFrameBufferPtr, DEFAULT_DST_PIXEL_FORMAT, (int)VIDEO_WIDTH, (int)VIDEO_HEIGHT, 1);
+            (byte*)this._convertedFrameBufferPtr, DEFAULT_DST_PIXEL_FORMAT, (int)this._codecContext->width, (int)this._codecContext->height, 1);
     }
 
     /// <summary>

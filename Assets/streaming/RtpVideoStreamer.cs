@@ -11,11 +11,11 @@ public unsafe class RtpVideoStreamer : IDisposable
     private static readonly AVCodecID DEFAULT_VIDEO_CODEC = AVCodecID.AV_CODEC_ID_MPEG1VIDEO;
     private static readonly AVPixelFormat DEFAULT_SRC_PIXEL_FORMAT = AVPixelFormat.AV_PIX_FMT_YUV420P;
     private static readonly AVPixelFormat DEFAULT_DST_PIXEL_FORMAT = AVPixelFormat.AV_PIX_FMT_YUV420P;
-    private static readonly int VIDEO_WIDTH = 1920;
-    private static readonly int VIDEO_HEIGHT = 1080;
     private static readonly long DEFAULT_BIT_RATE = 1600000L;
     public static readonly int VIDEO_FPS = 30;
 
+    private readonly int videoWidth;
+    private readonly int videoHeight;
     private readonly AVFormatContext* _formatContext;
     private readonly AVCodecContext* _codecContext;
     private readonly AVStream* _avStream;
@@ -24,8 +24,11 @@ public unsafe class RtpVideoStreamer : IDisposable
     private readonly SwsContext* _convertContext;
     private long _frameIndex;
 
-    public RtpVideoStreamer(string rtpUrl)
+    public RtpVideoStreamer(string rtpUrl, int width = 1920, int height = 1080)
     {
+        this.videoWidth = width;
+        this.videoHeight = height;
+
         // RTP Output Context 할당
         AVFormatContext* formatContext;
         ffmpeg.avformat_alloc_output_context2(&formatContext, null, "rtp", rtpUrl);
@@ -85,8 +88,8 @@ public unsafe class RtpVideoStreamer : IDisposable
     private void InitContext(string rtpUrl)
     {
         this._codecContext->codec_id = DEFAULT_VIDEO_CODEC;
-        this._codecContext->width = VIDEO_WIDTH;
-        this._codecContext->height = VIDEO_HEIGHT;
+        this._codecContext->width = this.videoWidth;
+        this._codecContext->height = this.videoHeight;
         this._codecContext->bit_rate = DEFAULT_BIT_RATE;
         this._codecContext->time_base.den = VIDEO_FPS;
         this._codecContext->time_base.num = 1;
@@ -129,7 +132,7 @@ public unsafe class RtpVideoStreamer : IDisposable
 
         // 픽셀 포멧 변환
         ffmpeg.sws_scale(this._convertContext,
-            srcFrame->data, srcFrame->linesize, 0, VIDEO_HEIGHT,
+            srcFrame->data, srcFrame->linesize, 0, this.videoHeight,
             this._frame->data, this._frame->linesize);
 
         // 프레임 인덱스 설정
