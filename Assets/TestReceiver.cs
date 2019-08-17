@@ -1,10 +1,12 @@
 ﻿using System;
 using System.IO;
 using UnityEngine;
+using UnityEngine.UI;
 using FFmpeg.AutoGen;
 
 public unsafe class TestReceiver : MonoBehaviour
 {
+    public Text logText;
     public GameObject streamingViewer;
 
     private RtpVideoReceiver receiver;
@@ -13,6 +15,7 @@ public unsafe class TestReceiver : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        this.logText.text += "Test Started.\n";
         RegisterFFmpegBinaries();
         this.receiver = new RtpVideoReceiver("rtp://127.0.0.1:9000/test/");
         this.texture = new Texture2D(1920, 1080, TextureFormat.RGB24, false);
@@ -22,6 +25,7 @@ public unsafe class TestReceiver : MonoBehaviour
     void Update()
     {
         AVFrame receivedFrame = receiver.ReceiveFrame();
+        this.logText.text = "Received!";
 
         texture.LoadRawTextureData((IntPtr)receivedFrame.data[0], 1920 * 1080 * 3);
         texture.Apply();
@@ -34,14 +38,14 @@ public unsafe class TestReceiver : MonoBehaviour
     /// </summary>
     private void RegisterFFmpegBinaries()
     {
-        var current = Environment.CurrentDirectory;
+        var current = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
         var probe = "FFmpeg";
         while (current != null)
         {
             var ffmpegBinaryPath = Path.Combine(current, probe);
             if (Directory.Exists(ffmpegBinaryPath))
             {
-                Debug.Log($"FFmpeg binaries found in: {ffmpegBinaryPath}");
+                this.logText.text += $"FFmpeg binaries found in: " + ffmpegBinaryPath + "\n";
                 ffmpeg.RootPath = ffmpegBinaryPath;
                 return;
             }

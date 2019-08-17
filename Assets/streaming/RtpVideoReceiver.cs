@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using FFmpeg.AutoGen;
 using System.Runtime.InteropServices;
 
@@ -21,7 +21,6 @@ public unsafe class RtpVideoReceiver : IDisposable
     private readonly IntPtr _convertedFrameBufferPtr;
     private readonly byte_ptrArray4 _convertDstData;
     private readonly int_array4 _convertDstLinesize;
-    private readonly int _streamIndex;
 
     public RtpVideoReceiver(string rtpUrl)
     {
@@ -46,8 +45,7 @@ public unsafe class RtpVideoReceiver : IDisposable
         }
         if (avStream == null) throw new InvalidOperationException("Could not found video stream.");
 
-        // 스트림 인덱스 및 코덱 컨텍스트 할당
-        this._streamIndex = avStream->index;
+        // RTP 스트림 코덱 컨텍스트 할당
         this._codecContext = avStream->codec;
 
         // RTP 디코더 코덱 찾기
@@ -107,6 +105,10 @@ public unsafe class RtpVideoReceiver : IDisposable
     /// <returns>수신받은 프레임</returns>
     public AVFrame ReceiveFrame()
     {
+        // 프레임, 패킷 레퍼런스 해제
+        ffmpeg.av_frame_unref(this._frame);
+        ffmpeg.av_packet_unref(this._packet);
+
         // 프레임 수신
         ffmpeg.av_read_frame(this._formatContext, this._packet);
 

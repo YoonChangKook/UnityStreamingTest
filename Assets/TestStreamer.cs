@@ -64,7 +64,7 @@ public unsafe class TestStreamer : MonoBehaviour
     /// </summary>
     private void RegisterFFmpegBinaries()
     {
-        var current = Environment.CurrentDirectory;
+        var current = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
         var probe = "FFmpeg";
         while (current != null)
         {
