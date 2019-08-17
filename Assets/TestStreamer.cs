@@ -5,7 +5,7 @@ using System.Threading;
 using UnityEngine;
 using FFmpeg.AutoGen;
 
-public unsafe class Tester : MonoBehaviour
+public unsafe class TestStreamer : MonoBehaviour
 {
     private RtpVideoStreamer streamer;
     private AVFrame* srcFrame;

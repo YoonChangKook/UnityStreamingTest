@@ -26,8 +26,6 @@ public unsafe class RtpVideoStreamer : IDisposable
 
     public RtpVideoStreamer(string rtpUrl)
     {
-        ffmpeg.avformat_network_init();
-
         // RTP Output Context 할당
         AVFormatContext* formatContext;
         ffmpeg.avformat_alloc_output_context2(&formatContext, null, "rtp", rtpUrl);
