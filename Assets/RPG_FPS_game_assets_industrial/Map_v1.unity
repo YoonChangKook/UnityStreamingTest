@@ -16308,8 +16308,9 @@ GameObject:
   - component: {fileID: 1407300207}
   - component: {fileID: 1407300206}
   - component: {fileID: 1407300205}
-  - component: {fileID: 1407300210}
   - component: {fileID: 1407300211}
+  - component: {fileID: 1407300210}
+  - component: {fileID: 1407300212}
   m_Layer: 0
   m_Name: Capsule
   m_TagString: Untagged
@@ -16419,12 +16420,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1407300204}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6cf6b57f184ec5f48adde790c08df675, type: 3}
+  m_Script: {fileID: 11500000, guid: 9f81694a3e75e234bbe0b4c23effe4ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 6
-  jumpSpeed: 8
-  gravity: 20
+  speed: 3
+  rotateSpeed: 3
 --- !u!114 &1407300211
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16445,6 +16445,20 @@ MonoBehaviour:
   minimumY: -60
   maximumY: 60
   frameCounter: 20
+--- !u!114 &1407300212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1407300204}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f81694a3e75e234bbe0b4c23effe4ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 3
+  rotateSpeed: 3
 --- !u!1001 &1412547601
 PrefabInstance:
   m_ObjectHideFlags: 0

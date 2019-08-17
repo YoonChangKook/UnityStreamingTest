@@ -190,7 +190,7 @@ public unsafe class VirtualStreamer : MonoBehaviour, IDisposable
 
                 // 이미지 복사
                 byte[] rawData = this.frameQueue.Dequeue();
-                rawData = GetFlipedImage(rawData, screenWidth, screenHeight, 3);
+                //rawData = GetFlipedImage(rawData, screenWidth, screenHeight, 3);
                 fixed (byte* rawDataPtr = &rawData[0])
                     ffmpeg.av_image_fill_arrays(ref this._convertDstData, ref this._convertDstLinesize,
                         rawDataPtr, AVPixelFormat.AV_PIX_FMT_RGB24, screenWidth, screenHeight, 1);

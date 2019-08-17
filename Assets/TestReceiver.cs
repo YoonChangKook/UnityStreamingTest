@@ -18,7 +18,7 @@ public unsafe class TestReceiver : MonoBehaviour
         this.logText.text += "Test Started.\n";
         RegisterFFmpegBinaries();
         this.receiver = new RtpVideoReceiver("rtp://127.0.0.1:9000/test/");
-        this.texture = new Texture2D(1920, 1080, TextureFormat.RGB24, false);
+        this.texture = new Texture2D(this.receiver.VideoWidth, this.receiver.VideoHeight, TextureFormat.RGB24, false);
     }
 
     // Update is called once per frame
@@ -27,7 +27,7 @@ public unsafe class TestReceiver : MonoBehaviour
         AVFrame receivedFrame = receiver.ReceiveFrame();
         this.logText.text = "Received!";
 
-        texture.LoadRawTextureData((IntPtr)receivedFrame.data[0], 1920 * 1080 * 3);
+        texture.LoadRawTextureData((IntPtr)receivedFrame.data[0], this.receiver.VideoWidth * this.receiver.VideoHeight * 3);
         texture.Apply();
 
         streamingViewer.GetComponent<Renderer>().material.mainTexture = texture;

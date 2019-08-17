@@ -20,6 +20,9 @@ public unsafe class RtpVideoReceiver : IDisposable
     private readonly byte_ptrArray4 _convertDstData;
     private readonly int_array4 _convertDstLinesize;
 
+    public int VideoWidth { get; }
+    public int VideoHeight { get; }
+
     public RtpVideoReceiver(string rtpUrl)
     {
         ffmpeg.avformat_network_init();
@@ -73,6 +76,10 @@ public unsafe class RtpVideoReceiver : IDisposable
 
         ffmpeg.av_image_fill_arrays(ref this._convertDstData, ref this._convertDstLinesize,
             (byte*)this._convertedFrameBufferPtr, DEFAULT_DST_PIXEL_FORMAT, (int)this._codecContext->width, (int)this._codecContext->height, 1);
+
+        // 공개 데이터 설정
+        VideoWidth = this._codecContext->width;
+        VideoHeight = this._codecContext->height;
     }
 
     /// <summary>
